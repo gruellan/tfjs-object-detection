@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import '@tensorflow/tfjs'
 import * as cocoSsd from '@tensorflow-models/coco-ssd'
 import ImageUploading from 'react-images-uploading'
@@ -21,17 +21,13 @@ function App () {
   function renderResults () {
     if (!isNaN(predictions.score)) {
       return (
-        <div>
+        <p>
           {predictions.class} = {(predictions.score * 100).toFixed(2) + '%'}
-        </div>
+        </p>
       )
     }
     if (!image) {
-      return (
-        <div>
-          <p>Please upload an image</p>
-        </div>
-      )
+      return <p>Please upload an image</p>
     } else {
       return <p>Loading...</p>
     }
@@ -39,16 +35,14 @@ function App () {
 
   const onChange = imageList => {
     setImage(imageList[0])
-    console.log('list ' + imageList[0].dataURL)
     run()
-    console.log(imageList[0])
   }
 
   function renderImage () {
     if (image && image.dataURL != null)
       return (
         <div>
-          <img src={image.dataURL} alt='' id='img' />
+          <img src={image.dataURL} alt='' id='img' style={{ maxWidth: 600 }} />
         </div>
       )
     else return <div></div>
@@ -56,16 +50,16 @@ function App () {
 
   return (
     <div className='app'>
-      <p>yo yo</p>
+      <h3>Object Detection</h3>
+      {renderResults()}
       <ImageUploading onChange={onChange} acceptType={['jpg', 'gif', 'png']}>
-        {({ imageList, onImageUpload, onImageRemoveAll }) => (
+        {({ onImageUpload }) => (
           <div>
             <button onClick={onImageUpload}>Upload image</button>&nbsp;
             {renderImage()}
           </div>
         )}
       </ImageUploading>
-      {renderResults()}
     </div>
   )
 }
