@@ -3,34 +3,40 @@ import '@tensorflow/tfjs'
 import * as cocoSsd from '@tensorflow-models/coco-ssd'
 import ImageUploading from 'react-images-uploading'
 
-function App () {
+function App() {
   const [predictions, setPredictions] = useState([])
   const [image, setImage] = useState()
 
-  async function run () {
+  async function run() {
     const img = document.getElementById('img')
     const model = await cocoSsd.load()
 
     // Classify the image
     if (img != null) {
       const res = await model.detect(img)
-      setPredictions({ class: res[0].class, score: res[0].score })
+      setPredictions(res)
     }
   }
 
-  function renderResults () {
-    if (!isNaN(predictions.score)) {
-      return (
-        <p>
-          {predictions.class} = {(predictions.score * 100).toFixed(2) + '%'}
-        </p>
-      )
+  function renderResults() {
+    let strings = ["Loading..."]
+    if ((predictions[0])) {
+      // Get rid of loading string
+      strings = []
+      predictions.forEach(el => {
+        console.log(el)
+        let str = el.class + "=" + (el.score * 100).toFixed(2) + '%'
+        strings.push(str)
+      })
     }
     if (!image) {
-      return <p>Please upload an image</p>
-    } else {
-      return <p>Loading...</p>
+      strings = ["Please upload an image."]
     }
+    return (
+      <div>
+        {strings.map((el, index) => { return (<p key={index}>{el}</p>) })}
+      </div>
+    )
   }
 
   const onChange = imageList => {
@@ -38,7 +44,7 @@ function App () {
     run()
   }
 
-  function renderImage () {
+  function renderImage() {
     if (image && image.dataURL != null)
       return (
         <div>
